@@ -23,5 +23,6 @@ func SetStatusError(w http.ResponseWriter, message string, errorCode int,
 	res.Message = message
 	data, _ := json.Marshal(res)
 	w.Write(data)
+	WriteLog("Error: " + res.Message)
 
 }

@@ -35,3 +35,8 @@ func WriteLog(event string) {
 	}
 	codeutils.WriteToLog(event, GetAppName())
 }
+
+func GetMD5(text string) (hash string) {
+	hash = codeutils.GetMD5(text)
+	return
+}
