@@ -68,20 +68,22 @@ func GetSession(r *http.Request) (token string, exist bool, session CheckSession
 
 }
 
-func CheckNumber(w http.ResponseWriter, r *http.Request, number string) (valid bool) {
+func CheckNumber(w http.ResponseWriter, number string) (mdn string, valid bool) {
 
-	if len(number) > 0 && strings.HasPrefix(number, "0") {
+	if len(number) > 0 && (strings.HasPrefix(number, "0") || strings.HasPrefix(number, "+")) {
 		number = number[1:]
 	}
 	sampleRegexp := regexp.MustCompile(`\D`)
 	valid = !sampleRegexp.MatchString(number)
 	if valid {
 		prefix := GetConfigValue("countryprefix", "249")
+		if strings.HasPrefix(number, prefix) {
+			number = number[len(prefix):]
+		}
 		lengStr := GetConfigValue("mdnlength", "9")
 		leng, _ := strconv.Atoi(lengStr)
 
-		valid = (strings.HasPrefix(number, prefix) && len(number) == leng+3) ||
-			(len(number) == leng)
+		valid = len(number) == leng
 	}
 	if !valid {
 		SetStatusError(w, "Invalid MDN", ERR_INVALID_NUMBER, http.StatusBadRequest)
