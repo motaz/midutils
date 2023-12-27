@@ -24,6 +24,16 @@ func CheckMethodAndContentType(w http.ResponseWriter, r *http.Request, method st
 	return
 }
 
+func CheckContentType(next http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if !strings.Contains(r.Header.Get("Content-Type"), "application/json") {
+			SetStatusError(w, "content-type must be application/json", ERR_INVALID_CONTENTTYPE, http.StatusNotAcceptable)
+			return
+		}
+		next.ServeHTTP(w, r)
+	}
+}
+
 type SessionType struct {
 	UserID   int
 	Token    string
@@ -90,4 +100,16 @@ func CheckNumber(w http.ResponseWriter, number string) (mdn string, valid bool) 
 
 	}
 	return
+}
+
+func CheckSession(handler http.HandlerFunc) http.HandlerFunc {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+
+		_, exist, _, _ := GetSession(r)
+		if exist {
+			handler.ServeHTTP(w, r)
+		} else {
+			SetStatusError(w, "Invalid token", ERR_INVALID_TOKEN, http.StatusUnauthorized)
+		}
+	})
 }

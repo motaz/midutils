@@ -26,3 +26,27 @@ func SetStatusError(w http.ResponseWriter, message string, errorCode int,
 	WriteLog("Error: " + res.Message)
 
 }
+
+func MethodGet(next http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if CheckMethodAndContentType(w, r, "GET") {
+			next.ServeHTTP(w, r)
+		}
+	}
+}
+
+func MethodPost(next http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if CheckMethodAndContentType(w, r, "POST") {
+			next.ServeHTTP(w, r)
+		}
+	}
+}
+
+func MethodDelete(next http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if CheckMethodAndContentType(w, r, "DELETE") {
+			next.ServeHTTP(w, r)
+		}
+	}
+}
