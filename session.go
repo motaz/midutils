@@ -95,7 +95,9 @@ func CheckNumber(w http.ResponseWriter, number string) (mdn string, valid bool) 
 
 		valid = len(number) == leng
 	}
-	if !valid {
+	if valid {
+		mdn = number
+	} else {
 		SetStatusError(w, "Invalid MDN", ERR_INVALID_NUMBER, http.StatusBadRequest)
 
 	}
