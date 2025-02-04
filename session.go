@@ -17,7 +17,7 @@ func CheckMethodAndContentType(w http.ResponseWriter, r *http.Request, method st
 	if !valid {
 		SetStatusError(w, "Method must be "+method, ERR_INVALID_METHOD, http.StatusMethodNotAllowed)
 	}
-	if valid && strings.ToLower(r.Header.Get("content-type")) != "application/json" {
+	if valid && (strings.ToLower(r.Header.Get("content-type")) != "application/json" && r.Method != http.MethodGet) {
 		SetStatusError(w, "content-type must be application/json", 2, http.StatusNotAcceptable)
 		valid = false
 	}
@@ -71,7 +71,12 @@ func CheckToken(token string) (isValid bool, session CheckSessionType, err error
 func GetSession(r *http.Request) (token string, exist bool, session CheckSessionType, err error) {
 
 	token = r.Header.Get("token")
-
+	if token == "" {
+		authHeaderArr := strings.Split(r.Header.Get("Authorization"), " ")
+		if len(authHeaderArr) == 2 {
+			token = authHeaderArr[1]
+		}
+	}
 	exist, session, err = CheckToken(token)
 
 	return
