@@ -80,7 +80,6 @@ func GetSession(r *http.Request) (token string, exist bool, session CheckSession
 	exist, session, err = CheckToken(token)
 
 	return
-
 }
 
 func CheckNumber(w http.ResponseWriter, number string) (mdn string, valid bool) {
