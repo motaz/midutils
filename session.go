@@ -82,7 +82,7 @@ func GetSession(r *http.Request) (token string, exist bool, session CheckSession
 	return
 }
 
-func CheckNumber(w http.ResponseWriter, number string) (mdn string, valid bool) {
+func GetPhoneNumber(number string) (mdn string, valid bool) {
 
 	if len(number) > 0 && (strings.HasPrefix(number, "0") || strings.HasPrefix(number, "+")) {
 		number = number[1:]
@@ -101,7 +101,14 @@ func CheckNumber(w http.ResponseWriter, number string) (mdn string, valid bool) 
 	}
 	if valid {
 		mdn = number
-	} else {
+	}
+	return
+}
+
+func CheckNumber(w http.ResponseWriter, number string) (mdn string, valid bool) {
+
+	mdn, valid = GetPhoneNumber(number)
+	if !valid {
 		SetStatusError(w, "Invalid MDN: "+number, ERR_INVALID_NUMBER, http.StatusBadRequest)
 
 	}

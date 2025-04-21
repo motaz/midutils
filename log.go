@@ -77,11 +77,16 @@ func Log(mux http.Handler) http.Handler {
 				if !ok {
 					mdn, ok = reqMap["sourcemdn"].(string)
 				}
+
 				if !ok {
 					mdn = "-"
 				}
 			}
 			log.Request = reqMap
+		}
+		if mdn != "-" {
+			mdn, _ = GetPhoneNumber(mdn)
+
 		}
 
 		log.MDN = mdn
