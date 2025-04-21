@@ -72,7 +72,11 @@ func Log(mux http.Handler) http.Handler {
 			var ok bool
 			mdn, ok = reqMap["msisdn"].(string)
 			if !ok {
-				mdn, ok = reqMap["sourcemdn"].(string)
+				mdn, ok = reqMap["mdn"].(string)
+
+				if !ok {
+					mdn, ok = reqMap["sourcemdn"].(string)
+				}
 				if !ok {
 					mdn = "-"
 				}
