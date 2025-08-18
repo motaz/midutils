@@ -2,7 +2,6 @@ package midutils
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"regexp"
 	"strconv"
@@ -49,8 +48,7 @@ type CheckSessionType struct {
 
 func CheckToken(token string) (isValid bool, session CheckSessionType, err error) {
 
-	url := GetConfigValue("suditurl", "http://localhost:9004/") + "/checksession"
-	fmt.Println(url)
+	url := GetConfigValue("suditurl", "http://localhost:13001/") + "/checksession"
 	var req *http.Request
 	req, err = codeutils.PrepareURLCall(url, "GET", nil)
 	isValid = false
@@ -59,19 +57,17 @@ func CheckToken(token string) (isValid bool, session CheckSessionType, err error
 		header["content-type"] = "application/json"
 		header["token"] = token
 		codeutils.SetURLHeaders(req, header)
-		fmt.Println("Token: ", token)
 		result := codeutils.CallURL(req, 30)
-		fmt.Println(string(result.Content))
 		err = result.Err
 		if result.Err == nil {
 			err = json.Unmarshal(result.Content, &session)
 			isValid = err == nil && session.Success
 		} else {
-			fmt.Println(result.Err.Error())
+			WriteErrorLog(result.Err.Error())
 		}
 
 	} else {
-		fmt.Println(err.Error())
+		WriteErrorLog(err.Error())
 	}
 	return
 }
@@ -99,9 +95,7 @@ func GetPhoneNumber(number string) (mdn string, valid bool) {
 	valid = !sampleRegexp.MatchString(number)
 	if valid {
 		prefix := GetConfigValue("countryprefix", "249")
-		if strings.HasPrefix(number, prefix) {
-			number = number[len(prefix):]
-		}
+		number = strings.TrimPrefix(number, prefix)
 		lengStr := GetConfigValue("mdnlength", "9")
 		leng, _ := strconv.Atoi(lengStr)
 

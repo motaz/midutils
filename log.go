@@ -30,7 +30,11 @@ func callLogger(req LogRequest, r *http.Request) {
 	reqData, _ := json.Marshal(req)
 	var reqMap = make(map[string]interface{})
 	json.Unmarshal(reqData, &reqMap)
-	callURLPost(aurl, reqMap)
+	resData, resp := callURLPost(aurl, reqMap)
+	success, ok := resp["success"].(bool)
+	if !ok || !success {
+		WriteErrorLog("error in calling callLogger: " + string(resData))
+	}
 }
 
 type LogRequest struct {
@@ -86,7 +90,6 @@ func Log(mux http.Handler) http.Handler {
 		}
 		if mdn != "-" {
 			mdn, _ = GetPhoneNumber(mdn)
-
 		}
 
 		log.MDN = mdn
@@ -119,13 +122,17 @@ func Log(mux http.Handler) http.Handler {
 		log.Message, _ = resMap["message"].(string)
 		log.Response = resMap
 
-		go callLogger(log, r)
+		if r.Method == http.MethodGet {
+			WriteLog("mdn : " + mdn + ", response: " + string(resData))
+		} else {
+			go callLogger(log, r)
+		}
 		w.WriteHeader(code)
 		w.Write(resData)
 	})
 }
 
-func callURLPost(url string, req map[string]interface{}) (response map[string]interface{}) {
+func callURLPost(url string, req map[string]interface{}) (bodyBytes []byte, response map[string]interface{}) {
 
 	response = make(map[string]interface{})
 	jsonReq, _ := json.Marshal(req)
@@ -140,8 +147,7 @@ func callURLPost(url string, req map[string]interface{}) (response map[string]in
 		return
 	}
 	defer resp.Body.Close()
-	bodyBytes, _ := io.ReadAll(resp.Body)
+	bodyBytes, _ = io.ReadAll(resp.Body)
 	json.Unmarshal(bodyBytes, &response)
-	WriteLog(string(bodyBytes))
 	return
 }

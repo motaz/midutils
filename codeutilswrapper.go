@@ -10,8 +10,7 @@ import (
 
 func GetAppName() (appname string) {
 	appname = os.Args[0]
-	var seperator string
-	seperator = string(os.PathSeparator)
+	seperator := string(os.PathSeparator)
 	if strings.Contains(appname, seperator) {
 		appname = appname[strings.LastIndex(appname, seperator)+1:]
 	}
@@ -34,6 +33,14 @@ func WriteLog(event string) {
 		fmt.Println(event)
 	}
 	codeutils.WriteToLog(event, GetAppName())
+}
+
+func WriteErrorLog(event string) {
+
+	if GetConfigValue("debug", "no") == "yes" {
+		fmt.Println(event)
+	}
+	codeutils.WriteToLog(event, "error-"+GetAppName())
 }
 
 func GetMD5(text string) (hash string) {
