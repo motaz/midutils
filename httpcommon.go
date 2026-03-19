@@ -11,8 +11,7 @@ type ResponseType struct {
 	Errorcode int    `json:"errorcode"`
 }
 
-func SetStatusError(w http.ResponseWriter, message string, errorCode int,
-	statusCode int) {
+func SetStatusError(w http.ResponseWriter, message string, errorCode int, statusCode int) {
 
 	w.WriteHeader(statusCode)
 

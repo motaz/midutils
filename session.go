@@ -18,7 +18,7 @@ func CheckMethodAndContentType(w http.ResponseWriter, r *http.Request, method st
 		SetStatusError(w, "Method must be "+method, ERR_INVALID_METHOD, http.StatusMethodNotAllowed)
 	}
 	if valid && (strings.ToLower(r.Header.Get("content-type")) != "application/json" && r.Method != http.MethodGet) {
-		SetStatusError(w, "content-type must be application/json", 2, http.StatusNotAcceptable)
+		SetStatusError(w, "content-type must be application/json", ERR_INVALID_CONTENTTYPE, http.StatusBadRequest)
 		valid = false
 	}
 	return
@@ -27,7 +27,7 @@ func CheckMethodAndContentType(w http.ResponseWriter, r *http.Request, method st
 func CheckContentType(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if !strings.Contains(r.Header.Get("Content-Type"), "application/json") {
-			SetStatusError(w, "content-type must be application/json", ERR_INVALID_CONTENTTYPE, http.StatusNotAcceptable)
+			SetStatusError(w, "content-type must be application/json", ERR_INVALID_CONTENTTYPE, http.StatusBadRequest)
 			return
 		}
 		next.ServeHTTP(w, r)
