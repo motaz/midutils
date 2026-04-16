@@ -2,6 +2,7 @@ package midutils
 
 import (
 	"encoding/json"
+
 	"net/http"
 	"regexp"
 	"strconv"
@@ -16,17 +17,19 @@ func CheckMethodAndContentType(w http.ResponseWriter, r *http.Request, method st
 	valid = strings.ToUpper(r.Method) == method
 	if !valid {
 		SetStatusError(w, "Method must be "+method, ERR_INVALID_METHOD, http.StatusMethodNotAllowed)
+		return
 	}
-	if valid && (strings.ToLower(r.Header.Get("content-type")) != "application/json" && r.Method != http.MethodGet) {
+	if strings.ToLower(r.Header.Get("content-type")) != "application/json" {
 		SetStatusError(w, "content-type must be application/json", ERR_INVALID_CONTENTTYPE, http.StatusBadRequest)
 		valid = false
+
 	}
 	return
 }
 
 func CheckContentType(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if !strings.Contains(r.Header.Get("Content-Type"), "application/json") {
+		if strings.ToLower("Content-Type") != "application/json" {
 			SetStatusError(w, "content-type must be application/json", ERR_INVALID_CONTENTTYPE, http.StatusBadRequest)
 			return
 		}
