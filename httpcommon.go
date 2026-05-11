@@ -2,6 +2,7 @@ package midutils
 
 import (
 	"encoding/json"
+
 	"net/http"
 )
 
@@ -22,7 +23,7 @@ func SetStatusError(w http.ResponseWriter, message string, errorCode int, status
 	res.Message = message
 	data, _ := json.Marshal(res)
 	w.Write(data)
-	WriteLog("Error: " + res.Message)
+	WriteLog("Error Response: " + string(data))
 
 }
 
