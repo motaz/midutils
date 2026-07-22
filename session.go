@@ -114,7 +114,7 @@ func CheckNumber(w http.ResponseWriter, number string) (mdn string, valid bool) 
 
 	mdn, valid = GetPhoneNumber(number)
 	if !valid {
-		SetStatusError(w, "Invalid MDN: "+number, ERR_INVALID_NUMBER, http.StatusBadRequest)
+		SetStatusError(w, "Invalid number: "+number, ERR_INVALID_NUMBER, http.StatusBadRequest)
 
 	}
 	return
